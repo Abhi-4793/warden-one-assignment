@@ -7,6 +7,6 @@ export async function fecthProperties(q?:string,limit=20):Promise<Property[]>{
     const res = await axios.get(`${BACKEND_ENDPOINT}/get-properties`,{
         params:{q,limit},
     });
-    return res.data as Property[];
+    return res?.data as Property[];
 
 }

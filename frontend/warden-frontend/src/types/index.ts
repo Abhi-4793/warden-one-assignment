@@ -6,7 +6,7 @@ export type Property = {
   latitude: number;
   [key: string]: any;
 };
-export type weather = {
+export type Weather = {
   temprature: number | null;
   humidity: number | null;
   weathercode: number | null;
