@@ -8,6 +8,11 @@ export async function getWeatherLongandLang(
   lon: number
 ): Promise<Weather> {
   try {
+    // console.log("====================================");
+    // console.log(lat, "latitude");
+    // console.log(lon, "longitude");
+
+    console.log("====================================");
     const res = await axios.get(weatherEndpoint, {
       params: {
         latitude: lat,
@@ -17,30 +22,31 @@ export async function getWeatherLongandLang(
         timezone: "UTC",
       },
     });
-    const data = res?.data;
+    const data = res.data;
+    // console.log("====================================");
+    // console.log(data, "data");
+    // console.log("====================================");
     const current = data.current_weather ?? null;
 
     let humidity: number | null = null;
 
+    const nowISO = new Date().toISOString().slice(0, 13);
+
     if (data.hourly && data.hourly.time && data.hourly.relativehumidity_2m) {
-      const currentTime = new Date().toISOString().slice(0, 13);
-      console.log("====================================");
-      console.log(currentTime, "currentTime");
-      console.log("====================================");
       const idx = data.hourly.time.findIndex((t: string) =>
-        t.startsWith(currentTime)
+        t.startsWith(nowISO)
       );
-      humidity = data.hourly.relativehumidity_2m[idx] ?? null;
+      humidity = idx !== -1 ? data.hourly.relativehumidity_2m[idx] : null;
     }
 
     return {
-      temprature: current ? current.temprature : null,
+      temperature: current ? current.temperature : null,
       weathercode: current ? current.weathercode : null,
       humidity,
     };
   } catch (e) {
-    console.error("Weather fetch failed", err);
-    return { temprature: null, humidity: null, weathercode: null };
+    console.error("Weather fetch failed", e);
+    return { temperature: null, humidity: null, weathercode: null };
   }
 }
 

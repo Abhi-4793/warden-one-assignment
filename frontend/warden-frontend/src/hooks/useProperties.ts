@@ -26,9 +26,12 @@ export function useProperties(searchQuery?: string) {
 
   async function fetchWeatherForAll(limit = 10) {
     const subset = properties.slice(0, limit);
+    console.log("====================================");
+    console.log(subset, "sub");
+    console.log("====================================");
     const results = await Promise.all(
       subset.map(async (p) => {
-        const w = await getWeatherLongandLang(p.latitude, p.longitude);
+        const w = await getWeatherLongandLang(p?.lat, p?.lng);
         return { ...p, weather: w };
       })
     );
