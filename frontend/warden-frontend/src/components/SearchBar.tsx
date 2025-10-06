@@ -20,9 +20,9 @@ export default function SearchBar({
         flex="1"
         placeholder="Search for the city "
       />
-      <Button onClick={onSearch} bg="bg.inverted">
+      {/* <Button onClick={onSearch} bg="bg.inverted">
         Search
-      </Button>
+      </Button> */}
     </Group>
   );
 }

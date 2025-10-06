@@ -1,95 +1,104 @@
-# 🏠 Weather to Stay or Not
+# Weather to Stay or Not - Property Weather Filter Application
 
-Welcome! This is an evaluation project for Warden.
+## Overview
 
-You are provided with a slice of the Warden backend codebase. At present, it contains only one API endpoint, `/get-properties`, which returns the first 20 properties and supports basic text search.
+This project is a property search web application built with Next.js and Chakra UI. It integrates live weather data via the Open-Meteo API to enable users to find properties based on location, temperature, humidity, and weather conditions. The app supports server-side filtering with pagination, ensuring accurate and efficient results.
 
-In the file `.env.example` you are given readonly credentials of a live hosted database. This db is already populated with properties data on which this API operates.
+---
 
-## Objectives
+## Features
 
-Your task is to build a single **search page in Next.js** that consumes this API to return accurate results and provides users with both search and filtering capabilities. **Specific Requirement is given below.**
+- Full-text search on property name, city, and state.
+- Fetches live weather data for each property including temperature, humidity, and weather code.
+- Filters properties based on:
+  - Temperature range
+  - Humidity range
+  - Weather condition groups (Clear, Cloudy, Drizzle, Rainy, Snow)
+- Client-side debounce for search input.
+- Pagination with controlled page size (20 results per page).
+- Server-side filtering applies to the entire dataset before paginating results.
+- Modular code structure with clear separation of backend and frontend.
 
-The focus here is **functionality rather than design**. This means the main priority is on backend query optimization (efficiently handling multiple filters, scaling to larger datasets, and returning results quickly) and smooth frontend integration (accurate wiring between filters, search, and API responses). The UI itself can remain minimal: a simple search bar, intuitive filtering inputs, and property cards showing relevant information are more than enough.
+---
 
-## User Requirements
+## Setup Instructions
 
-![It sure is a hot one today](https://arden-public.s3.ap-south-1.amazonaws.com/hotone.jpg)
+### Backend Setup
 
-Our Product team has identified that weather is a critical factor when people choose properties to stay at. In fact, some residents might even reject a job offer if the local weather doesn’t suit them. To address this, we need to enhance the property search experience by adding **live weather-based filters**.
+1. Clone the repository:
 
-The Marketing team is also planning to run a campaign that will bring a lot of traffic. So, along with Tech, all three teams meet to discuss what needs to be done.
+```bash
+git clone https://github.com/Abhi-4793/warden-one-assignment.git
+cd backend
+```
 
-After a 9 hour meeting, following filters and constraints were finalized.
+2. Install dependencies:
 
-| **Filter**             | **Input Type**          | **Allowed Range/Options**                                                                                                                                                                                                                     |
-| ---------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Temperature Range (°C) | Numeric range (min/max) | -20°C to 50°C                                                                                                                                                                                                                                 |
-| Humidity Range (%)     | Numeric range (min/max) | 0% to 100%                                                                                                                                                                                                                                    |
-| Weather Condition      | Dropdown (grouped)      | - **Clear:** 0 (clear sky)<br>- **Cloudy:** 1–3 (partly cloudy to overcast)<br>- **Drizzle:** 51–57 (light to dense drizzle)<br>- **Rainy:** 61–67, 80–82 (rain showers, light to heavy)<br>- **Snow:** 71–77, 85–86 (snowfall, snow showers) |
+```bash
+npm install
+```
 
-> **Note:** The numbers listed under "Weather Condition" refer to weather codes as defined by [WMO](https://codes.wmo.int/common/weather-code) (World Meteorological Organization)
+3. Generate Prisma client:
 
-## Approach
+```bash
+npm run prisma:gen
+```
 
-1. Use [Open-Meteo](https://open-meteo.com/) to fetch **live weather data** by passing `latitude` and `longitude` from each property. No API key is required.
+4. Copy environment configuration and update:
 
-2. You only have **readonly access** to the provided database. If you wish to create migrations or modify the schema, please follow the [migration guide](docs/migrations.md).
+```bash
+cp .env.example .env
+```
 
-## Installation
+Set your database credentials and other configs.
 
-1. Clone this repository and move into the folder:
-   ```bash
-   git clone <repo-url>
-   cd warden-test-one
-   ```
-2. Install Dependencies
-   ```bash
-   npm i
-   npm run prisma:gen
-   ```
-3. Copy Environment File
-   ```bash
-   cp .env.example .env
-   ```
-4. Start the development server
-   ```bash
-   npm run dev
-   ```
-   open `http://localhost:5000` you should see "Warden Weather Test: OK"
+5. Run the backend server:
 
-## Technical Expectations
+```bash
+npm run dev
+```
 
-1. Use strict types as much as possible.
+Backend runs on `http://localhost:5000`.
 
-2. Keep the code modular, resource efficient and fast!
+### Frontend Setup
 
-3. Keep a good commit history, with small meaningful commits
+1. Navigate to frontend directory (if separate):
 
-## Quality Expectations
+```bash
+cd frontend/warden-frontend
+```
 
-Assume that you are already working here, and you are given full responsibilty ownership of this endpoint. Treat this codebase as production!
+2. Install dependencies:
 
-If you feel that you can enhance this project with any additional filters, better UI elements, or something different altogether! Feel free to run wild.
+```bash
+npm install
+```
 
-## Deliverables
+3. Configure environment variable:
 
-1. A working app with the required changes as per the assignment.
+Create `.env.local` with the following:
 
-2. README.md with setup/run instructions. Include .env.example and a seed step (if any) if you've changed db schema.
+NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
 
-3. AI_USAGE.md that lists where you used AI/coding assistants, prompts you asked for substantive code, and how you verified/modified results. AI use is not discouraged, but we want to understand how you structure your prompts.
+4. Run frontend:
 
-4. A 5-10 min video walkthrough via Loom showing the working feature and explaining your approach, a couple of decisions, and at least one scenario where you discovered some critical foresight and changed your approach.
+```bash
+npm run dev
+```
 
-## Submission
+## How It Works
 
-- You have **48 hours** from the time you receive the assignment email to complete and submit your solution.
+- **Backend**:
 
-- After making all required changes, **push your code to a public repository**.
+  - Handles search, filters, and pagination.
+  - Fetches an initial batch of properties (adjustable size).
+  - Retrieves live weather for those properties.
+  - Filters properties based on weather criteria.
+  - Slices results for current page.
+  - Sends total count for UI pagination control.
 
-- **Share the public repo link** and all deliverables by replying to the assignment email, and **CC hiring@wardenera.com**.
-
-- Use the subject line: `Weather to Stay or Not | Warden Assignment by {your_name}`.
-
-Good luck, have fun.
+- **Frontend**:
+  - Manages user input for search and filters.
+  - Sends current page, search, and filters to backend.
+  - Displays properties and pagination controls.
+  - Supports navigating pages, updating data accordingly.
