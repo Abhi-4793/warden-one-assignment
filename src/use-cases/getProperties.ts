@@ -15,39 +15,29 @@ export const getProperties = async (req: Request, res: Response) => {
       maxHumidity = "100",
       weatherGroup = "",
       searchText = "",
+      page = "1",
+      pageSize = "20",
     } = req.query;
 
     const minTempNum = Number(minTemp);
     const maxTempNum = Number(maxTemp);
     const minHumidityNum = Number(minHumidity);
     const maxHumidityNum = Number(maxHumidity);
+    const pageNum = Math.max(1, Number(page));
+    const pageSizeNum = Math.max(1, Number(pageSize));
+    const skip = (pageNum - 1) * pageSizeNum;
 
-    const lowerSearch =
-      typeof searchText === "string" ? searchText.toLowerCase() : "";
+    const totalCount = await prisma.property.count({
+      where: buildPropertyWhere(req),
+    });
 
     const baseProperties = await prisma.property.findMany({
-      where: lowerSearch
-        ? {
-            OR: [{ city: { contains: lowerSearch } }],
-          }
-        : undefined,
+      skip,
+      take: pageSizeNum * 5,
+      where: buildPropertyWhere(req),
     });
 
-    const searchedProperties = baseProperties.filter((property) => {
-      if (typeof searchText !== "string" || !searchText.trim()) return true;
-
-      const q = searchText.toLowerCase();
-      return (
-        property.name?.toLowerCase().includes(q) ||
-        property.city?.toLowerCase().includes(q) ||
-        property.state?.toLowerCase().includes(q)
-      );
-    });
-
-    console.log("====================================");
-    console.log(baseProperties, "test");
-    console.log("====================================");
-
+    // Fetch live weather for these properties
     const propertiesWithWeather = await Promise.all(
       baseProperties.map(async (property) => {
         if (property.lat === null || property.lng === null) {
@@ -57,7 +47,11 @@ export const getProperties = async (req: Request, res: Response) => {
         return { ...property, weather };
       })
     );
+    // console.log("====================================");
+    // console.log(propertiesWithWeather, "baseProperties");
+    // console.log("====================================");
 
+    // Apply weather filters
     const filtered = propertiesWithWeather.filter(({ weather }) => {
       if (!weather) return false;
 
@@ -78,9 +72,18 @@ export const getProperties = async (req: Request, res: Response) => {
       return tempOk && humidityOk && weatherGroupOk;
     });
 
-    const finalResults = filtered.slice(0, 20);
+    // console.log("====================================");
+    // console.log(filtered, "page");
+    // console.log("====================================");
 
-    return res.json(finalResults);
+    const pagedResults = filtered.slice(0, pageSizeNum);
+
+    return res.json({
+      totalCount,
+      page: pageNum,
+      pageSize: pageSizeNum,
+      results: pagedResults,
+    });
   } catch (error) {
     console.error("Error fetching filtered properties:", error);
     return res.status(500).json({ error: "Internal Server Error" });

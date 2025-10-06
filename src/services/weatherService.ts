@@ -54,6 +54,9 @@ export async function fetchLiveWeather(latitude: number, longitude: number) {
       humidity = idx !== -1 ? data.hourly.relativehumidity_2m[idx] : null;
     }
 
+    console.log("====================================");
+    console.log(data, "data");
+    console.log("====================================");
     return {
       temperature: currentWeather ? currentWeather.temperature : null,
       humidity,

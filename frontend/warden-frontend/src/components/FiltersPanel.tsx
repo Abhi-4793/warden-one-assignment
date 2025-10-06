@@ -107,6 +107,7 @@ export default function FiltersPanel({
             })
           }
         >
+          <option value="">All</option>
           {Object.keys(WEATHER_GROUPS).map((g) => (
             <option key={g} value={g}>
               {g}

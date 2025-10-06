@@ -9,6 +9,7 @@ import {
   Spinner,
   Flex,
   Text,
+  HStack,
 } from "@chakra-ui/react";
 import { useProperties } from "../hooks/useProperties";
 import PropertyCard from "../components/PropertyCard";
@@ -16,11 +17,12 @@ import SearchBar from "../components/SearchBar";
 import FiltersPanel from "../components/FiltersPanel";
 import { Filters } from "@/types";
 
-import { getWeatherLongandLang, WeatherCodeToGroup } from "@/libs/weather";
 import { useDebounce } from "@/hooks/useDebounce";
 
 export default function HomePage() {
   const [searchText, setSearchText] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
 
   const [filters, setFilters] = useState<Filters>({
     minTemp: "",
@@ -33,22 +35,34 @@ export default function HomePage() {
   const debouncedSearch = useDebounce(searchText, 500);
 
   // ✅ Hook will refetch automatically when debouncedSearch changes
-  const { properties, isLoading, mutate } = useProperties(
+  const { properties, totalCount, isLoading, mutate } = useProperties(
     debouncedSearch,
-    filters
+    filters,
+    page,
+    pageSize
   );
-
-  const [visible, setVisible] = useState<any[]>([]);
-
   useEffect(() => {
-    if (properties.length > 0) {
-      setVisible(properties.slice(0, 20));
-    }
-  }, [properties]);
+    setPage(1);
+  }, [debouncedSearch, filters]);
+  const totalPages = Math.ceil((totalCount ?? 0) / pageSize);
 
-  console.log("====================================");
-  console.log(visible, "prop");
-  console.log("====================================");
+  function onPageChange(nextPage: number) {
+    if (nextPage < 1 || nextPage > totalPages) return;
+    setPage(nextPage);
+    // mutate(); // trigger refetch with new page
+  }
+
+  // const [visible, setVisible] = useState<any[]>([]);
+
+  // useEffect(() => {
+  //   if (properties.length > 0) {
+  //     setVisible(properties.slice(0, 20));
+  //   }
+  // }, [properties]);
+
+  // console.log("====================================");
+  // console.log(visible, "prop");
+  // console.log("====================================");
 
   function resetFilters() {
     setFilters({
@@ -59,7 +73,9 @@ export default function HomePage() {
       weatherGroup: "",
     });
   }
-
+  console.log("====================================");
+  console.log(properties, "prop");
+  console.log("====================================");
   return (
     <Container maxW="container.xl" py={6}>
       <SearchBar q={searchText} setQ={setSearchText} onSearch={() => {}} />
@@ -81,15 +97,38 @@ export default function HomePage() {
           )}
 
           {!isLoading && (
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={10} mt={6}>
-              {visible.length > 0 ? (
-                visible.map((p) => <PropertyCard key={p.id} property={p} />)
-              ) : (
-                <Text color="gray.500" mt={4}>
-                  No properties match your filters.
-                </Text>
+            <>
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={10} mt={6}>
+                {properties.length > 0 ? (
+                  properties.map((p) => (
+                    <PropertyCard key={p.id} property={p} />
+                  ))
+                ) : (
+                  <Text color="gray.500" mt={4}>
+                    No properties match your filters.
+                  </Text>
+                )}
+              </SimpleGrid>
+              {totalPages > 1 && (
+                <HStack mt={6} justifyContent="center">
+                  <Button
+                    onClick={() => onPageChange(page - 1)}
+                    disabled={page === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Text>
+                    Page {page} of {totalPages}
+                  </Text>
+                  <Button
+                    onClick={() => onPageChange(page + 1)}
+                    disabled={page === totalPages}
+                  >
+                    Next
+                  </Button>
+                </HStack>
               )}
-            </SimpleGrid>
+            </>
           )}
         </Box>
       </Flex>
