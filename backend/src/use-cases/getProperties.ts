@@ -33,7 +33,7 @@ export const getProperties = async (req: Request, res: Response) => {
 
     const baseProperties = await prisma.property.findMany({
       skip,
-      take: pageSizeNum * 5,
+      take: pageSizeNum,
       where: buildPropertyWhere(req),
     });
 
