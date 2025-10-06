@@ -37,6 +37,10 @@ export async function fetchLiveWeather(latitude: number, longitude: number) {
     const res = await fetch(url);
     const data = (await res.json()) as OpenMeteoResponse;
 
+    // console.log("====================================");
+    // console.log(data, "data");
+    // console.log("====================================");
+
     const currentWeather = data.current_weather ?? null;
     let humidity: number | null = null;
 
