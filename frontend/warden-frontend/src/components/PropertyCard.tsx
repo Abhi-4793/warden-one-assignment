@@ -12,7 +12,7 @@ export default function PropertyCard({
 }) {
   const w = property.weather;
   return (
-    <Box border="1px solid #eee" borderRadius="md" p={4}>
+    <Box border="1px solid #094364ff" shadow="md" borderRadius="md" p={4}>
       <Heading size="sm">{property.name}</Heading>
       <Text fontSize="sm" color="gray.600">
         {property.address ?? ""}

@@ -1,15 +1,25 @@
 import axios from "axios";
-import { Property } from "@/types";
+import { Filters } from "@/types";
 
-const BACKEND_ENDPOINT =
+const backendBaseURL =
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
-export async function fecthProperties(
-  q?: string,
-  limit = 20
-): Promise<Property[]> {
-  const res = await axios.get(`${BACKEND_ENDPOINT}/get-properties`, {
-    params: { q, limit },
+export async function fecthProperties(searchText = "", filters?: Filters) {
+  const params: Record<string, any> = {};
+
+  if (searchText) params.searchText = searchText;
+
+  if (filters) {
+    if (filters.minTemp) params.minTemp = filters.minTemp;
+    if (filters.maxTemp) params.maxTemp = filters.maxTemp;
+    if (filters.minHumidity) params.minHumidity = filters.minHumidity;
+    if (filters.maxHumidity) params.maxHumidity = filters.maxHumidity;
+    if (filters.weatherGroup) params.weatherGroup = filters.weatherGroup;
+  }
+
+  const response = await axios.get(`${backendBaseURL}/get-properties`, {
+    params,
   });
-  return res?.data as Property[];
+
+  return response.data;
 }

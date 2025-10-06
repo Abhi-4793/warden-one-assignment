@@ -1,6 +1,6 @@
 "use client";
 
-import { Input, InputGroup, InputElement, Button } from "@chakra-ui/react";
+import { Input, Group, InputElement, Button } from "@chakra-ui/react";
 
 export default function SearchBar({
   q,
@@ -12,19 +12,17 @@ export default function SearchBar({
   onSearch: () => void;
 }) {
   return (
-    <InputGroup>
-      <>
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search properties by name or address..."
-        />
-        <InputElement>
-          <Button size="sm" onClick={onSearch}>
-            Search
-          </Button>
-        </InputElement>
-      </>
-    </InputGroup>
+    <Group attached w="full" maxW="xlg">
+      <Input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && onSearch()}
+        flex="1"
+        placeholder="Search for the city "
+      />
+      <Button onClick={onSearch} bg="bg.inverted">
+        Search
+      </Button>
+    </Group>
   );
 }

@@ -11,3 +11,11 @@ export type Weather = {
   humidity: number | null;
   weathercode: number | null;
 };
+
+export type Filters = {
+  minTemp?: number | "";
+  maxTemp?: number | "";
+  minHumidity?: number | "";
+  maxHumidity?: number | "";
+  weatherGroup?: string[] | string;
+};
