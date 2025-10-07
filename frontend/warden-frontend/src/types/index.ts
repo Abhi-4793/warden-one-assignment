@@ -19,3 +19,25 @@ export type Filters = {
   maxHumidity?: number | "";
   weatherGroup?: string[] | string;
 };
+
+type WeatherData = {
+  temperature: number;
+  humidity: number;
+  weathercode: number;
+};
+
+export type Location = {
+  id: number;
+  name: string;
+  city: string;
+  state: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  geohash5: string;
+  isActive: boolean;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+  weather: WeatherData;
+};
