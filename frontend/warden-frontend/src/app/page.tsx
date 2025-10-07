@@ -15,7 +15,7 @@ import { useProperties } from "../hooks/useProperties";
 import PropertyCard from "../components/PropertyCard";
 import SearchBar from "../components/SearchBar";
 import FiltersPanel from "../components/FiltersPanel";
-import { Filters } from "@/types";
+import { Filters, Location } from "@/types";
 
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -34,7 +34,6 @@ export default function HomePage() {
 
   const debouncedSearch = useDebounce(searchText, 500);
 
-  // ✅ Hook will refetch automatically when debouncedSearch changes
   const { properties, totalCount, isLoading, mutate } = useProperties(
     debouncedSearch,
     filters,
@@ -92,7 +91,7 @@ export default function HomePage() {
           {isLoading && (
             <Flex mt={6} align="center" justify="center">
               <Spinner />
-              <Text ml={2}>Loading properties...</Text>
+              <Text ml={2}>Loading Properties Accroding to Weather...</Text>
             </Flex>
           )}
 
@@ -100,12 +99,12 @@ export default function HomePage() {
             <>
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={10} mt={6}>
                 {properties.length > 0 ? (
-                  properties.map((p) => (
+                  properties.map((p: Location) => (
                     <PropertyCard key={p.id} property={p} />
                   ))
                 ) : (
                   <Text color="gray.500" mt={4}>
-                    No properties match your filters.
+                    No Weather for Properties match your filters.
                   </Text>
                 )}
               </SimpleGrid>
